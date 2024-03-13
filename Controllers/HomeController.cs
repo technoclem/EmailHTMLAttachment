@@ -7,20 +7,19 @@ namespace EmailHTMLAttachment.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private IWebHostEnvironment Environment;
+        private IEmailService emailService;
+        public HomeController(IWebHostEnvironment _environment, IEmailService _emailService)
         {
-            _logger = logger;
+            Environment = _environment;
+            emailService = _emailService;
         }
 
         public async Task<IActionResult> Index(EmailModel em)
         {   
             if (ModelState.IsValid)
             {
-                
-                EmailService emailService = new EmailService();
-                 bool response= await emailService.SendMail(em.EmailSubject, em.EmailBody,em.ReceiverEmail);
+                bool response = await emailService.SendMail(em.EmailSubject, em.EmailBody, em.ReceiverEmail);
                 if (response) TempData["success"] = "Email Sent Successfuly";
                 else TempData["error"] = "Error sending Email";               
             }
