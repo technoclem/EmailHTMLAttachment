@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model EmailModel
+
+<partial name="_Notification" />
+
+<form method="post">
+    <div class="border pt-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Send Email with HTML Template using .net8 MVC</h2>
+            
+        </div>
+        <div class="row mb-3 p-1">
+            <label asp-for="ReceiverEmail"></label> 
+            <input asp-for="ReceiverEmail" class="form-control" />
+            <span asp-validation-for="ReceiverEmail" class="text-danger"></span>
+        </div>
+        <div class="row mb-3 p-1">
+            <label asp-for="EmailSubject"></label>
+            <input asp-for="EmailSubject" class="form-control" />
+            <span asp-validation-for="EmailSubject" class="text-danger"></span>
+        </div>
+        <div class="row mb-3 p-1">
+            <label asp-for="EmailBody"></label>
+            <textarea asp-for="EmailBody" class="form-control"></textarea>
+            <span asp-validation-for="EmailBody" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-6 col-md 3">
+                <button type="submit" class="btn btn-primary form-control">Add</button>
+            </div>
+            <div class="col-6 col-md 3">
+               
+            </div>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial"></partial>
+    }
+}
+
+
+<div class="text-center">
+    <h1 class="display-4"></h1>
+    <div class="section">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                
+            </div>
+        </div>
+    </div>
+</div>
