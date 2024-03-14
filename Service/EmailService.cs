@@ -1,30 +1,32 @@
-﻿
-
-
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace EmailHTMLAttachment.Service
 {
+    // Service responsible for sending emails with HTML content and attachments
     public class EmailService : IEmailService
     {
-        private IWebHostEnvironment Environment;
-        
-        public EmailService(IWebHostEnvironment env)
+        private IWebHostEnvironment _environment; // Environment details
+        private readonly IConfiguration _config; // Application configuration
+        private readonly ILogger<EmailService> _logger; // Logging service
+
+        // Constructor to initialize dependencies
+        public EmailService(IWebHostEnvironment environment, IConfiguration config, ILogger<EmailService> logger)
         {
-            Environment = env;
+            _environment = environment;
+            _config = config;
+            _logger = logger;
         }
+
+        // Method to retrieve HTML email template
         public async Task<string> GetHTMLTemplate(string subject, string body)
         {
             string EmailHtmlTemplate = "";
             try
             {
-                // Construct the path to the template file inside the MailHTMLTemplate directory
-                string templatePath = Path.Combine(Environment.WebRootPath,
-                    "MailHTMLTemplate", "template.txt");
+                // Construct the path to the template file inside the Helper directory
+                string templatePath = Path.Combine(_environment.ContentRootPath, "Helper", "EmailTemplate.txt");
 
                 // Read the content of the template file
                 EmailHtmlTemplate = await File.ReadAllTextAsync(templatePath);
@@ -32,34 +34,56 @@ namespace EmailHTMLAttachment.Service
                 EmailHtmlTemplate = EmailHtmlTemplate.Replace("***CONTENT***", body);
 
             }
-            catch { }
+            catch (Exception ex)
+            {
+                // Log error if unable to read template
+                _logger.LogError(ex, "Unable to read the Email HTML Template");
+            }
             return EmailHtmlTemplate;
         }
 
+        // Method to send email
         public async Task<bool> SendMail(string subject, string body, string receiver)
         {
-            bool response =false;
+            bool response = false;
             try
             {
+                // Retrieve sender email and password from configuration
+                string? senderEmail = _config.GetValue<string>("Email:SenderEmail");
+                string? senderPassword = _config.GetValue<string>("Email:SenderPassword");
 
-                MailMessage mm = new MailMessage("your sender email", receiver);
-                mm.IsBodyHtml = true;
-                mm.Subject = subject;
-                mm.Body = await GetHTMLTemplate(subject, body);
-
-                // I used gmail account for the smtp: provide your email smtp here
-                var client = new SmtpClient("smtp.gmail.com", 587)
+                // Proceed if sender credentials are available
+                if (senderEmail != null && senderPassword != null)
                 {
-                    Credentials = new NetworkCredential("your sender email", "sender email password"),
-                    EnableSsl = true,
-                    DeliveryMethod = SmtpDeliveryMethod.Network
-                };
-                client.Send(mm);
-                response = true;
-            }
-            catch { }
-           
+                    // Create mail message
+                    MailMessage mm = new MailMessage(senderEmail, receiver);
+                    mm.IsBodyHtml = true;
+                    mm.Subject = subject;
+                    mm.Body = await GetHTMLTemplate(subject, body);
 
+                    // Setup SMTP client (Gmail in this case)
+                    var client = new SmtpClient("smtp.gmail.com", 587)
+                    {
+                        Credentials = new NetworkCredential(senderEmail, senderPassword),
+                        EnableSsl = true,
+                        DeliveryMethod = SmtpDeliveryMethod.Network
+                    };
+
+                    // Send email
+                    client.Send(mm);
+                    response = true;
+                }
+                else
+                {
+                    // Log error if sender configuration is missing
+                    _logger.LogError("Unable to read the Email Configuration in appsettings");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error if unable to send email
+                _logger.LogError(ex, $"Unable to send message to {receiver}");
+            }
             return response;
         }
     }
