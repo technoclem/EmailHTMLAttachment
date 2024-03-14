@@ -65,7 +65,7 @@
             }
         },
         glossary:{
-            title:'AlertifyJS',
+            title:'.NET 8 Email Using HTML Format',
             ok: 'OK',
             cancel: 'Cancel',
             acccpt: 'Accept',

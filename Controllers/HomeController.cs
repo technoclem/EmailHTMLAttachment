@@ -15,19 +15,26 @@ namespace EmailHTMLAttachment.Controllers
             emailService = _emailService;
         }
 
-        public async Task<IActionResult> Index(EmailModel em)
+        public IActionResult Index()
         {   
+                        
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(EmailModel em)
+        {
             if (ModelState.IsValid)
             {
                 bool response = await emailService.SendMail(em.EmailSubject, em.EmailBody, em.ReceiverEmail);
                 if (response) TempData["success"] = "Email Sent Successfuly";
-                else TempData["error"] = "Error sending Email";               
+                else TempData["error"] = "Error sending Email";
             }
-            
+            ModelState.Clear();
             return View();
         }
 
-        
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
