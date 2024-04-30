@@ -3,9 +3,14 @@
 }
 @model EmailModel
 
-<partial name="_Notification" />
+
+@section Scripts {
+    <partial name="_Notification" />
+    <partial name="_ValidationScriptsPartial"></partial>
+    <partial name="_FileInput" />
+}
 <div class="m-5">
-<form method="post">
+    <form method="post" enctype="multipart/form-data">
     <div class="m-5 section pt-3 mt-4">
         <div class=" pb-2">
             <h2 class="text-primary">Send Email with HTML Template using .net8 MVC</h2>
@@ -26,6 +31,10 @@
             <textarea asp-for="EmailBody" class="form-control"></textarea>           
             <span asp-validation-for="EmailBody" class="text-danger"></span>
         </div>
+            <div class="form-group form-floating theme-form-floating mb-3">
+                <input asp-for="Attachment" data-browse-on-zone-click="true" data-allowed-file-extensions='["jpg","png","gif","jpeg","bmp","doc","docx","xls","xlsx"]' />
+                <span asp-validation-for="Attachment" class="text-danger"></span>
+            </div>
         <div class="row mt-3">
             <div class="col-12 col-md 6">
                 <button type="submit" class="btn btn-primary form-control">Send Mail</button>
@@ -36,9 +45,5 @@
 
 </form>
 </div>
-@section Scripts {
-    @{
-        <partial name="_ValidationScriptsPartial"></partial>
-    }
-}
+
 

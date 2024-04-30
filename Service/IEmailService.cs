@@ -4,6 +4,6 @@
     public interface IEmailService
     {
         Task<string> GetHTMLTemplate(string subject, string body); // Method to retrieve HTML email template
-        Task<bool> SendMail(string subject, string body, string receiver); // Method to send email
+        Task<bool> SendMail(string subject, string body,IFormFile attachment, string receiver); // Method to send email
     }
 }

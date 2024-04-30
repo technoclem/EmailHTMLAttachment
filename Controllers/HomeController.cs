@@ -26,7 +26,7 @@ namespace EmailHTMLAttachment.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool response = await emailService.SendMail(em.EmailSubject, em.EmailBody, em.ReceiverEmail);
+                bool response = await emailService.SendMail(em.EmailSubject, em.EmailBody,em.Attachment, em.ReceiverEmail);
                 if (response) TempData["success"] = "Email Sent Successfuly";
                 else TempData["error"] = "Error sending Email";
             }

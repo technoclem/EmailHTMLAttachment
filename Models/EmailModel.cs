@@ -22,5 +22,7 @@ namespace EmailHTMLAttachment.Models
         [DisplayName("Body of The Email")]
         [MaxLength(1000, ErrorMessage = "Body of The Email must be at most 1000 characters")]
         public string EmailBody { get; set; } = "";
+
+        public IFormFile? Attachment { get; set; }
     }
 }

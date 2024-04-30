@@ -43,48 +43,65 @@ namespace EmailHTMLAttachment.Service
         }
 
         // Method to send email
-        public async Task<bool> SendMail(string subject, string body, string receiver)
+        public async Task<bool> SendMail(string subject, string body, IFormFile attachment, string receiver)
+{
+    bool response = false;
+    try
+    {
+        // Retrieve sender email and password from configuration
+        string? senderEmail = _config.GetValue<string>("Email:SenderEmail");
+        string? senderPassword = _config.GetValue<string>("Email:SenderPassword");
+
+        // Proceed if sender credentials are available
+        if (!string.IsNullOrEmpty(senderEmail) && !string.IsNullOrEmpty(senderPassword))
         {
-            bool response = false;
-            try
+            // Create mail message
+            using (MailMessage mm = new MailMessage(senderEmail, receiver))
             {
-                // Retrieve sender email and password from configuration
-                string? senderEmail = _config.GetValue<string>("Email:SenderEmail");
-                string? senderPassword = _config.GetValue<string>("Email:SenderPassword");
+                mm.IsBodyHtml = true;
+                mm.Subject = subject;
+                mm.Body = await GetHTMLTemplate(subject, body);
 
-                // Proceed if sender credentials are available
-                if (senderEmail != null && senderPassword != null)
+                // Attach the file if not null
+                if (attachment != null)
                 {
-                    // Create mail message
-                    MailMessage mm = new MailMessage(senderEmail, receiver);
-                    mm.IsBodyHtml = true;
-                    mm.Subject = subject;
-                    mm.Body = await GetHTMLTemplate(subject, body);
-
-                    // Setup SMTP client (Gmail in this case)
-                    var client = new SmtpClient("smtp.gmail.com", 587)
+                    using (var ms = new MemoryStream())
                     {
-                        Credentials = new NetworkCredential(senderEmail, senderPassword),
-                        EnableSsl = true,
-                        DeliveryMethod = SmtpDeliveryMethod.Network
-                    };
+                        await attachment.CopyToAsync(ms);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        // Reset the position to the beginning of the stream before attaching
+                        mm.Attachments.Add(new Attachment(ms, attachment.FileName));
+                    }
+                }
+
+                // Setup SMTP client (Gmail in this case)
+                using (var client = new SmtpClient("smtp.gmail.com", 587))
+                {
+                    client.Credentials = new NetworkCredential(senderEmail, senderPassword);
+                    client.EnableSsl = true;
+                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
 
                     // Send email
-                    client.Send(mm);
-                    response = true;
-                }
-                else
-                {
-                    // Log error if sender configuration is missing
-                    _logger.LogError("Unable to read the Email Configuration in appsettings");
+                    await client.SendMailAsync(mm);
                 }
             }
-            catch (Exception ex)
-            {
-                // Log error if unable to send email
-                _logger.LogError(ex, $"Unable to send message to {receiver}");
-            }
-            return response;
+            response = true;
         }
+        else
+        {
+            // Log error if sender configuration is missing
+            _logger.LogError("Unable to read the Email Configuration in appsettings");
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log error if unable to send email
+        _logger.LogError(ex, $"Unable to send message to {receiver}");
+    }
+    return response;
+}
+
+
+
     }
 }

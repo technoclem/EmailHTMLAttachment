@@ -1,9 +1,9 @@
 
 
-# .NET Core Email Service with HTML Body and Attachment
+# .NET 8 Email Service with HTML Body and Attachment
 
 ## Overview
-This repository hosts a .NET8 application designed to facilitate the sending of emails with HTML body content and optional attachments. Leveraging ASP.NET Core MVC, it provides a user-friendly interface for users to compose and send emails directly from the web application.
+This repository hosts a .NET8 application designed to facilitate the sending of emails with HTML body content and optional attachments. Leveraging ASP.NET 8 MVC, it provides a user-friendly interface for users to compose and send emails directly from the web application.
 
 ## Features
 - Email Composition: Users can compose emails with customizable HTML body content.

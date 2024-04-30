@@ -1,0 +1,18 @@
+﻿<!-- Add FileInput CSS & JS -->
+<link rel="stylesheet" type="text/css" href="~/FileInput/fileinput.css" media="all" />
+<link rel="stylesheet" type="text/css" href="~/FileInput/all.css">
+<script src="~/FileInput/fileinput.js" type="text/javascript"></script>
+<script src="~/FileInput/theme.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Attachment").fileinput({
+            'showUpload': false,
+            theme: 'fas',
+            minFileSize: 1,
+            maxFileSize: 1000,
+            browseLabel: 'Attachment',
+            mainClass: 'fileInputmain',
+            dropZoneEnabled: false
+        });
+    });
+</script>
