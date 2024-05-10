@@ -48,7 +48,7 @@ This repository hosts a .NET8 application designed to facilitate the sending of 
 - `Microsoft.Extensions.Logging`: Facilitates logging of errors and information.
 
 ## Demo
-Visit this link for the Demo :https://emailhtmlattachment20240314030655.azurewebsites.net/
+Visit this link for the Demo :http://emailhtmlcore.runasp.net/
 
 ## Contributing
 Contributions are encouraged! Please feel free to submit issues or pull requests for enhancements or bug fixes.
